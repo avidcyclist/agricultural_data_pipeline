@@ -1,13 +1,17 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from datetime import datetime
+from datetime import datetime, timedelta
 from data_ingestion.fetch_crop_yield_data import fetch_crop_yield_data
-from data_ingestion.upload_to_s3 import upload_to_s3
+from etl.data_cleaning import clean_crop_yield_data
+from etl.data_transformation import transform_crop_yield_data
+from etl.load_to_postgres import load_crop_yield_data_to_postgres
 
 default_args = {
     'owner': 'airflow',
+    'depends_on_past': False,
     'start_date': datetime(2023, 1, 1),
     'retries': 1,
+    'retry_delay': timedelta(minutes=5),
 }
 
 dag = DAG(
@@ -23,10 +27,22 @@ fetch_data = PythonOperator(
     dag=dag,
 )
 
-upload_data = PythonOperator(
-    task_id='upload_to_s3',
-    python_callable=upload_to_s3,
+clean_data = PythonOperator(
+    task_id='clean_crop_yield_data',
+    python_callable=clean_crop_yield_data,
     dag=dag,
 )
 
-fetch_data >> upload_data
+transform_data = PythonOperator(
+    task_id='transform_crop_yield_data',
+    python_callable=transform_crop_yield_data,
+    dag=dag,
+)
+
+load_data = PythonOperator(
+    task_id='load_crop_yield_data_to_postgres',
+    python_callable=load_crop_yield_data_to_postgres,
+    dag=dag,
+)
+
+fetch_data >> clean_data >> transform_data >> load_data
