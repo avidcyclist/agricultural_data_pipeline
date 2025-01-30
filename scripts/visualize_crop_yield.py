@@ -12,6 +12,8 @@ data.dropna(subset=['yield'], inplace=True)
 # Filter data for the year 2021
 data_2021 = data[data['year'] == 2021]
 
+# Sort data by county alphabetically
+data_2021 = data_2021.sort_values(by='county')
 # Plot the crop yield data for 2021
 plt.figure(figsize=(12, 8))
 plt.bar(data_2021['county'], data_2021['yield'], color='skyblue')
