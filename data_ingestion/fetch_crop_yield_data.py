@@ -28,16 +28,17 @@ def process_crop_yield_data(data):
     processed_data = []
     for item in data['data']:
         yield_value = item['Value'].strip()
-        if yield_value in ['(D)', '(Z)']:
-            yield_value = None  # Handle special values
+        if yield_value in ['(D)', '(Z)'] or not item.get('county_name'):
+            continue  # Skip entries with special values or without county name
         processed_data.append({
             'crop': item['commodity_desc'],
             'yield': yield_value,
             'year': item['year'],
             'state': item['state_name'],
-            'county': item['county_name'] if 'county_name' in item else None
+            'county': item['county_name']
         })
     return processed_data
+
 
 if __name__ == "__main__":
     api_url = "https://quickstats.nass.usda.gov/api/api_GET/"  # Base API URL

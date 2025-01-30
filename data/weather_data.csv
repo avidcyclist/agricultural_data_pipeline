@@ -1,0 +1,2 @@
+city,weather_desc,temp_c,temp_f,feels_like_c,feels_like_f,wind_speed_mph,wind_direction,humidity,pressure,dew_point_c,dew_point_f,uv_index,visibility_km,precipitation_mm,solar_radiation,temp_min_c,temp_max_c,temp_min_f,temp_max_f,utc_timestamp,local_timestamp
+Bloomington,clear sky,3.11,37.6,-1.8,28.8,15.0,180,68,1016,-1.96,28.5,0.69,10.0,5.46,,1.09,5.32,33.96,41.58,2025-01-30T15:27:27,2025-01-30T09:27:27-06:00
