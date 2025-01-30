@@ -1,0 +1,13 @@
+numpy
+pandas
+requests
+boto3
+sqlalchemy
+psycopg2
+apache-airflow
+flask
+fastapi
+jupyter
+powerbi
+tableau-api
+pytest
