@@ -9,7 +9,10 @@ def clean_weather_data(df):
 def clean_crop_yield_data(df):
     df = df.dropna()  # Remove rows with missing values
     df['year'] = df['year'].astype(int)  # Ensure year is an integer
-    df = df[df['total_yield'] >= 0]  # Filter out negative yield values
+    if 'total_yield' in df.columns:
+        df = df[df['total_yield'] >= 0]  # Filter out negative yield values
+    elif 'area_harvested' in df.columns:
+        df = df[df['area_harvested'] >= 0]  # Filter out negative area values
     return df
 
 def preprocess_data(weather_data, crop_yield_data):
