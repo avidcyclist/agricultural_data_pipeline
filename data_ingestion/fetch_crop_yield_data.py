@@ -19,8 +19,9 @@ def fetch_crop_yield_data(api_url, statisticcat_desc):
     }
     response = requests.get(api_url, params=params)
     if response.status_code == 200:
-        crop_yield_data = response.json()
-        return process_crop_yield_data(crop_yield_data, statisticcat_desc)
+        crop_yield_data = response.json()  # This is the raw JSON data
+        processed_data = process_crop_yield_data(crop_yield_data, statisticcat_desc)
+        return crop_yield_data, processed_data
     else:
         raise Exception(f"Error fetching crop yield data: {response.status_code}")
 
@@ -43,7 +44,7 @@ def process_crop_yield_data(data, statisticcat_desc):
 if __name__ == "__main__":
     api_url = "https://quickstats.nass.usda.gov/api/api_GET/"  # Base API URL
     try:
-        raw_data = fetch_crop_yield_data(api_url, "YIELD")
-        print(raw_data.head())  # Print the first few rows of the DataFrame
+        raw_data, processed_data = fetch_crop_yield_data(api_url, "YIELD")
+        print(processed_data.head())  # Print the first few rows of the DataFrame
     except Exception as e:
         print(e)
