@@ -1,5 +1,11 @@
 import psycopg2
 import pandas as pd
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 def load_data_to_postgres(dataframe, table_name, db_config):
     """
@@ -11,30 +17,17 @@ def load_data_to_postgres(dataframe, table_name, db_config):
     - db_config: A dictionary containing database connection parameters.
     """
     try:
-        # Establish a connection to the PostgreSQL database
-        conn = psycopg2.connect(
-            dbname=db_config['dbname'],
-            user=db_config['user'],
-            password=db_config['password'],
-            host=db_config['host'],
-            port=db_config['port']
+        # Create a SQLAlchemy engine
+        engine = create_engine(
+            f"postgresql+psycopg2://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['dbname']}"
         )
-        cursor = conn.cursor()
 
         # Load the DataFrame into the PostgreSQL table
-        dataframe.to_sql(table_name, conn, if_exists='replace', index=False)
-
-        # Commit the transaction
-        conn.commit()
+        dataframe.to_sql(table_name, engine, if_exists='append', index=False)
         print(f"Data loaded successfully into {table_name}.")
 
     except Exception as e:
         print(f"Error loading data to PostgreSQL: {e}")
-
-    finally:
-        # Close the database connection
-        cursor.close()
-        conn.close()
 
 # Example usage
 if __name__ == "__main__":
@@ -46,11 +39,12 @@ if __name__ == "__main__":
 
     # Database configuration
     db_config = {
-        'dbname': 'your_db_name',
-        'user': 'your_username',
-        'password': 'your_password',
-        'host': 'localhost',
-        'port': '5432'
+        'dbname': os.getenv('DB_NAME'),
+        'user': os.getenv('DB_USER'),
+        'password': os.getenv('DB_PASSWORD').strip(),
+        'host': os.getenv('DB_HOST'),
+        'port': os.getenv('DB_PORT')
     }
 
-    load_data_to_postgres(df, 'your_table_name', db_config)
+    # Replace 'your_table_name' with the actual table name
+    load_data_to_postgres(df, 'crop_yield_data', db_config)
